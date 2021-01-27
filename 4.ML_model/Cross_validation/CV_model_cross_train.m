@@ -1,15 +1,11 @@
 
 addpath(genpath('W:\CT_Rectal'))
-addpath(genpath('W:\Final_resampled_results\Featstack_subsets\1.No_pruning'))
+addpath(genpath('W:\Final_resampled_results\Featstack_subsets'))
 addpath(genpath('W:\My_code'))
 addpath(genpath('W:\Final_resampled_results\AUC_results\fea_variables\wilcoxon\4.IS_ICC_pruning'))
 cd('W:\Final_resampled_results');
-load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
 dontuse = [71];
 fselmeth='wilcoxon';
-pruning=1;
-num_top_feats=7;
-
 try
     featstack_full=featstack_TI_full;
     featstack_half=featstack_TI_half;
