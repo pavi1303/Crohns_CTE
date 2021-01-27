@@ -72,7 +72,7 @@ for pset = 1:4
         testingdata2=featstack_half(newlist,:);
         testingdata3=featstack_safire4(newlist,:);
         
-        for iter=1:100
+        for iter=1:1
             trainingsplit=subsets(iter).training;
             testingsplit=subsets(iter).testing;
             for fset=1:3
@@ -88,7 +88,7 @@ for pset = 1:4
                 foldlabels{fset} = testing_labels;
                 
                 [~,mean_val,mad_val]=sw_outlier_compensation(training_set);
-                [training_set_swno,mean_val2,mad_val2]=simplewhiten(training_set,mean_val,mad_val);
+                [~,mean_val2,mad_val2]=simplewhiten(training_set,mean_val,mad_val);
                 testing_set1=simplewhiten(testing_set1,mean_val2,mad_val2);
                 testing_set2=simplewhiten(testing_set2,mean_val2,mad_val2);
                 testing_set3=simplewhiten(testing_set3,mean_val2,mad_val2);
@@ -116,12 +116,12 @@ for pset = 1:4
             [FPR,TPR,T,AUC2_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions2_sw, 1,'XVals', [0:0.02:1]);
             [FPR,TPR,T,AUC3_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions3_sw, 1,'XVals', [0:0.02:1]);
         end
-        HO_AUC{gset,1}=mean(mean(AUC1_sw));
-        HO_AUC{gset,2}=mean(mean(AUC2_sw));
-        HO_AUC{gset,3}=mean(mean(AUC3_sw));
-        HO_AUC{gset,4}=mean(std(AUC1_sw));
-        HO_AUC{gset,5}=mean(std(AUC2_sw));
-        HO_AUC{gset,6}=mean(std(AUC3_sw));
+        HO_AUC{1,1}=mean(mean(AUC1_sw));
+        HO_AUC{1,2}=mean(mean(AUC2_sw));
+        HO_AUC{1,3}=mean(mean(AUC3_sw));
+        HO_AUC{1,4}=mean(std(AUC1_sw));
+        HO_AUC{1,5}=mean(std(AUC2_sw));
+        HO_AUC{1,6}=mean(std(AUC3_sw));
     end
 end 
     %save(['CT_TI_resampled3D_entire_vol_grp1_IS_ICCpruning_S4_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
