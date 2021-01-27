@@ -6,6 +6,11 @@ addpath(genpath('W:\Final_resampled_results\AUC_results\fea_variables\wilcoxon\4
 cd('W:\Final_resampled_results');
 dontuse = [71];
 fselmeth='wilcoxon';
+HO_AUC={};
+fea_cell={};
+HO_AUC1=[];
+HO_AUC2=[];
+HO_AUC3=[];
 try
     featstack_full=featstack_TI_full;
     featstack_half=featstack_TI_half;
