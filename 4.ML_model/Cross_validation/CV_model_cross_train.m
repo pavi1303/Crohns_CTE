@@ -8,29 +8,28 @@ dontuse = 71;
 fselmeth='wilcoxon';
 num_top_feats = 6;
 pruning_stage = ["NO", "ICC", "IS", "IS_ICC"];
-tra_dose = ["half","saf4"];
-for pset = 1:4
+tra_dose = ["HALF","SAF4"];
+for pset = 1:1
     pruning_level = pruning_stage(1,pset);
     switch pruning_level
         case 'NO'
             load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
             top_fea = [283,421,408,794,802,252,797,810,265,266];%nopruning_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\1.No_pruning');
         case 'ICC'
             load('CT_TI_featstack_3Dresampled_ICCpruning_grp1.mat');
             top_fea = [204,175,242,561,283,563,976,223,59,986];%ICC_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\2.ICC_pruning');
         case 'IS'
             load('CT_TI_featstack_3Dresampled_ISpruning_grp1.mat');
             top_fea = [634,635,214,1166,66,67,60,255,640,201];%IS_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\3.IS_pruning');
         case 'IS_ICC'
             load('CT_TI_featstack_3Dresampled_IS_ICCpruning_grp1.mat');
             top_fea = [800,145,179,462,49,48,164,810,789,151];%IS_ICC_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\IS_ICC_pruning');
     end
     %-----NaN check---------------------%
-    fea = top_fea(1,1:num_top_feats);
     HO_AUC={};
     fea_cell={};
     HO_AUC1=[];
@@ -62,12 +61,12 @@ for pset = 1:4
     for dset = 1:2
         dose = tra_dose(1,dset);
         switch dose
-            case 'half'
+            case 'HALF'
                 trainingdata=featstack_half(newlist,:);
-            case 'saf4'
+            case 'SAF4'
                 trainingdata=featstack_safire4(newlist,:);
         end
-
+        
         testingdata1=featstack_full(newlist,:);
         testingdata2=featstack_half(newlist,:);
         testingdata3=featstack_safire4(newlist,:);
@@ -92,6 +91,8 @@ for pset = 1:4
                 testing_set1=simplewhiten(testing_set1,mean_val2,mad_val2);
                 testing_set2=simplewhiten(testing_set2,mean_val2,mad_val2);
                 testing_set3=simplewhiten(testing_set3,mean_val2,mad_val2);
+                
+                fea = top_fea(1,1:num_top_feats);
                 
                 [temp_stats1_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , ...
                     testing_set1(:,fea), training_labels(:), testing_labels(:), options);
@@ -122,6 +123,6 @@ for pset = 1:4
         HO_AUC{1,4}=mean(std(AUC1_sw));
         HO_AUC{1,5}=mean(std(AUC2_sw));
         HO_AUC{1,6}=mean(std(AUC3_sw));
+        save(['CT_TI_3Dresampled_cross_train_grp1_',num2str(num_top_feats),'_',convertStringsToChars(pruning_level),'_',convertStringsToChars(dose),'_Randomforest.mat'],'HO_AUC','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
     end
-end 
-    %save(['CT_TI_resampled3D_entire_vol_grp1_IS_ICCpruning_S4_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
+end
