@@ -15,19 +15,19 @@ for pset = 1:4
         case 'NO'
             load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
             top_fea = [283,421,408,794,802,252,797,810,265,266];%nopruning_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\1.No_pruning');
         case 'ICC'
             load('CT_TI_featstack_3Dresampled_ICCpruning_grp1.mat');
             top_fea = [204,175,242,561,283,563,976,223,59,986];%ICC_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\2.ICC_pruning');
         case 'IS'
             load('CT_TI_featstack_3Dresampled_ISpruning_grp1.mat');
             top_fea = [634,635,214,1166,66,67,60,255,640,201];%IS_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\3.IS_pruning');
         case 'IS_ICC'
             load('CT_TI_featstack_3Dresampled_IS_ICCpruning_grp1.mat');
             top_fea = [800,145,179,462,49,48,164,810,789,151];%IS_ICC_wilcoxon
-            cd('W:\Final_resampled_results');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\IS_ICC_pruning');
     end
     %-----NaN check---------------------%
     HO_AUC={};
@@ -123,7 +123,7 @@ for pset = 1:4
         HO_AUC{1,4}=mean(std(AUC1_sw));
         HO_AUC{1,5}=mean(std(AUC2_sw));
         HO_AUC{1,6}=mean(std(AUC3_sw));
-        
+        save(['CT_TI_3Dresampled_cross_train_grp1_',])
     end
 end
 %save(['CT_TI_resampled3D_entire_vol_grp1_IS_ICCpruning_S4_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
