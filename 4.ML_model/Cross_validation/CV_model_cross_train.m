@@ -1,3 +1,6 @@
+%CV model training
+%Using the top features from full dose, training half dose and safire4 resp
+%and testing on other doses
 clear all
 addpath(genpath('W:\CT_Rectal'))
 addpath(genpath('W:\Final_resampled_results\Featstack_subsets'))
