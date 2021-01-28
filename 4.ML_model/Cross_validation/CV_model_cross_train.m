@@ -1,16 +1,17 @@
-clear
+clear all
 addpath(genpath('W:\CT_Rectal'))
 addpath(genpath('W:\Final_resampled_results\Featstack_subsets'))
 addpath(genpath('W:\My_code'))
 addpath(genpath('W:\Final_resampled_results\AUC_results\fea_variables\wilcoxon\4.IS_ICC_pruning'))
 
 dontuse = 71;
-fselmeth='wilcoxon';
-num_top_feats = 6;
+fselmeth ='wilcoxon';
+num_top_feats = 10;
 pruning_stage = ["NO", "ICC", "IS", "IS_ICC"];
 tra_dose = ["HALF","SAF4"];
-for pset = 1:1
+for pset = 1:4
     pruning_level = pruning_stage(1,pset);
+    clear fea
     switch pruning_level
         case 'NO'
             load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
@@ -31,7 +32,6 @@ for pset = 1:1
     end
     %-----NaN check---------------------%
     HO_AUC={};
-    fea_cell={};
     HO_AUC1=[];
     HO_AUC2=[];
     HO_AUC3=[];
@@ -71,7 +71,7 @@ for pset = 1:1
         testingdata2=featstack_half(newlist,:);
         testingdata3=featstack_safire4(newlist,:);
         
-        for iter=1:1
+        for iter=1:100
             trainingsplit=subsets(iter).training;
             testingsplit=subsets(iter).testing;
             for fset=1:3
@@ -92,6 +92,7 @@ for pset = 1:1
                 testing_set2=simplewhiten(testing_set2,mean_val2,mad_val2);
                 testing_set3=simplewhiten(testing_set3,mean_val2,mad_val2);
                 
+                clear mad_val* mean_val*
                 fea = top_fea(1,1:num_top_feats);
                 
                 [temp_stats1_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , ...
@@ -112,10 +113,13 @@ for pset = 1:1
                 HO_AUC1(iter,fset)=temp_stats1_sw.AUC;
                 HO_AUC2(iter,fset)=temp_stats2_sw.AUC;
                 HO_AUC3(iter,fset)=temp_stats3_sw.AUC;
+                clear training_set* testing_set* ...
+                    training_labels* testing_labels* temp*
             end
             [FPR,TPR,~,AUC1_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions1_sw, 1,'XVals', [0:0.02:1]);
             [FPR,TPR,T,AUC2_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions2_sw, 1,'XVals', [0:0.02:1]);
             [FPR,TPR,T,AUC3_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions3_sw, 1,'XVals', [0:0.02:1]);
+            clear temp* fold*
         end
         HO_AUC{1,1}=mean(mean(AUC1_sw));
         HO_AUC{1,2}=mean(mean(AUC2_sw));
@@ -123,6 +127,9 @@ for pset = 1:1
         HO_AUC{1,4}=mean(std(AUC1_sw));
         HO_AUC{1,5}=mean(std(AUC2_sw));
         HO_AUC{1,6}=mean(std(AUC3_sw));
-        save(['CT_TI_3Dresampled_cross_train_grp1_',num2str(num_top_feats),'_',convertStringsToChars(pruning_level),'_',convertStringsToChars(dose),'_Randomforest.mat'],'HO_AUC','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
+        clear trainingdata* testingdata* AUC*
+        save(['CT_TI_3Dresampled_cross_train_grp1_',num2str(num_top_feats),'_',convertStringsToChars(pruning_level),...
+            '_',convertStringsToChars(dose),'_Randomforest.mat'],'HO_AUC','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
     end
+    clearvars -except dontuse fselmeth num_top_feats pruning_stage tra_dose
 end
