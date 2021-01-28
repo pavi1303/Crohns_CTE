@@ -12,21 +12,21 @@ fselmeth='wilcoxon';
 pruning=1;
 num_top_feats=6;
 pruning_stage = ["NO", "ICC", "IS", "IS_ICC"];
-for pset = 1:4
+for pset = 1:1
     pruning_level = pruning_stage(1,pset);
     switch pruning_level
         case 'NO'
             load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
-            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\1.No_pruning');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\1.No_pruning');
         case 'ICC'
             load('CT_TI_featstack_3Dresampled_ICCpruning_grp1.mat');
-            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\2.ICC_pruning');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\2.ICC_pruning');
         case 'IS'
             load('CT_TI_featstack_3Dresampled_ISpruning_grp1.mat');
-            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\3.IS_pruning');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\3.IS_pruning');
         case 'IS_ICC'
             load('CT_TI_featstack_3Dresampled_IS_ICCpruning_grp1.mat');
-            cd('W:\Final_resampled_results\AUC_results\Reformatted\Cross_training\IS_ICC_pruning');
+            cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\4.IS_ICC_pruning');
     end
     %-----NaN check---------------------%
     HO_AUC={};
@@ -90,7 +90,6 @@ for pset = 1:4
             else
                 set_candiF=pick_best_uncorrelated_features(training_set,training_labels);
             end
-            
             
             if strcmp(fselmeth,'mrmr')
                 
