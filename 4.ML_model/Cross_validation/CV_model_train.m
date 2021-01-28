@@ -2,61 +2,18 @@
 %objective: Using the training and testing splits generated in DisStudyFat
 %I will run CV with the testing data being taken from the a different recon
 %or dosage.
+clear
+addpath(genpath('W:\CT_Rectal'))
+addpath(genpath('W:\Final_resampled_results\Featstack_subsets'))
+addpath(genpath('W:\My_code'))
+cd('W:\Final_resampled_results\AUC_results\fea_variables\wilcoxon\4.IS_ICC_pruning');
 
-addpath(genpath('P:\Resampled_results'))
-addpath(genpath('O:\Resampled_data\Features'))
-addpath(genpath('P:\CT_Rectal'))
-addpath(genpath('P:\Resampled_results\Reproducibility\IS\Rep_IS'))
-% addpath(genpath('P:\Resampled_results\Reproducibility\ICC\ICC_based_pruning'))
-cd('P:\Resampled_results_2\Pruning\IS+ICC_d_rd\Grp1\mrmr\Randomforest');
-%--------------------------IS based pruning-------------------------------%
-%----------------Find stable features in the healthy comparison-----------%
-graycolumnindices = [1:21 464:484 927:947 1390:1410];
-load('Rep_3D_resampled_IS_healthy.mat');
-IS_h = Score_pw_sw;
-IS_h(graycolumnindices) = [];
-IS_h(1769:1770)=[];
-idx_h = find(IS_h==0);
-%---------------Find stable features in the diseased comparison-----------%
-load('Rep_3D_resampled_IS_diseased.mat');
-IS_d = Score_pw_sw;
-IS_d(graycolumnindices) = [];
-IS_d(1769:1770)=[];
-idx_d = find(IS_d==0);
-%-------Find the stable features common between healthy & diseased--------%
-idx = intersect(idx_h,idx_d);
-% D1=load('Rep_3D_resampled_IS_combined.mat');
-% IS= D1.Score_pw_sw;
-% IS(graycolumnindices) = [];
-% IS(1769:1770)=[];
-% idx = find(IS==0);
-% dontuse=[71];
-% Holdout=[];
-%------------------------------ICC based pruning--------------------------%
-% load('Rep_3D_resampled_ICC_h.mat');
-% idx1 = find(ICC_final_layer(3,:)>0.85);
-% % idx2 = find(ICC_final_layer(5,:)>0.85);
-% idx3 = find(ICC_final_layer(6,:)>0.85);
-% 
-% % idx = intersect(idx1,idx2);
-% idx_h = intersect(idx1,idx3);
-% clear idx1* idx3*
-% 
-% load('Rep_3D_resampled_ICC_d.mat');
-% idx1 = find(ICC_final_layer(3,:)>0.85);
-% % idx2 = find(ICC_final_layer(5,:)>0.85);
-% idx3 = find(ICC_final_layer(6,:)>0.85);
-% 
-% % idx = intersect(idx1,idx2);
-% idx_d = intersect(idx1,idx3);
-% 
-% idx = intersect(idx_h,idx_d);
-
-load('CT_TI_featstack_resampled3D_IS_ICCboth_grp1.mat');
+load('CT_TI_featstack_3Dresampled_IS_ICCpruning_grp1.mat');
 % labels=labels-1;
-fselmeth='mrmr';
-pruning=0;
-num_top_feats=9;
+dontuse = [71];
+fselmeth='wilcoxon';
+pruning=1;
+num_top_feats=10;
 
 try
   featstack_full=featstack_TI_full;
@@ -80,29 +37,14 @@ end
 % featstack_safire3(isnan(featstack_safire3))=0;
 featstack_safire4(isnan(featstack_safire4))=0;
 
-% % graycolumnindices = [1:21 464:484 927:947 1390:1410];
-% featstack_full(:,graycolumnindices)=[];
-% featstack_TI_full(:,graycolumnindices)=[];
-% featstack_full = featstack_full(:,idx);
-%  featstack_half(:,graycolumnindices)=[];
-% % featstack_safire3(:,graycolumnindices)=[];
-% featstack_safire4(:,graycolumnindices)=[];
-
-% featstack_full = featstack_full(:,idx);
-% featstack_half = featstack_half(:,idx);
-% featstack_safire4 = featstack_safire4(:,idx);
-
-feanames = statnames;
-% feanames(:,1:21)=[];
-feanames=feanames.';
-feanames=feanames(:).';
-% feanames=feanames(1,idx);
+% feanames = statnames;
+% feanames=feanames.';
+% feanames=feanames(:).';
 
 load('CTsubsets_lmn3.mat')%replace this with the needed subset
 
- list_dat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90]';
-% % 
-%  newlist=setdiff(list_dat,dontuse);
+list_dat=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90]';
+newlist=setdiff(list_dat,dontuse);
 % % newlist=setdiff(newlist,Holdout);
 HO_AUC={};
 % con_matrix={};
@@ -116,13 +58,13 @@ for gset=1:1
 %             featstack_half=[featstack_half(1:70,:);zeros(1,784);featstack_half(71:89,:)];
 %             featstack_safire4=[featstack_safire4(1:70,:);zeros(1,784);featstack_safire4(71:89,:)];
             
-             labels=[labels(1:70),1,labels(72:end)];
-%             labels = labels;
+%              labels=[labels(1:70),1,labels(72:end)];
+             labels = labels(:,newlist);
             
-             trainingdata=featstack_full;
-             testingdata1=featstack_full;
-             testingdata2=featstack_half;
-             testingdata3=featstack_safire4;
+             trainingdata=featstack_full(newlist,:);
+             testingdata1=featstack_full(newlist,:);
+             testingdata2=featstack_half(newlist,:);
+             testingdata3=featstack_safire4(newlist,:);
 %            
 %              trainingdata=featstack_full(newlist,:);
 %              testingdata1=featstack_full(newlist,:);
@@ -149,6 +91,7 @@ for gset=1:1
     HO_AUC2=[];
     HO_AUC3=[];
     fea_store={};
+    tic
     for iter=1:100
          trainingsplit=subsets(iter).training;
          testingsplit=subsets(iter).testing;
@@ -206,8 +149,9 @@ for gset=1:1
 %             HO_AUC2(iter,fset)=temp_stats2.AUC  ;
 %             HO_AUC3(iter,fset)=temp_stats2.AUC  ;
 %             fea_store{iter,fset}=fea;
-%            
-               [training_set_swno,mean_val,mad_val]=simplewhitennooutlier(training_set);
+               iter
+               fset
+               [training_set_swno,mean_val,mad_val]=sw_outlier_compensation(training_set);
                training_set=simplewhiten(training_set,mean_val,mad_val);
 %              [testing_set1_swno,mean_val1,mad_val1]=simplewhitennooutlier(testing_set1);
 %              testing_set1=simplewhiten(testing_set1,mean_val,mad_val);
@@ -245,10 +189,11 @@ for gset=1:1
                     fea = set_candiF(IDX(1:num_top_feats));
                 end
             end
-            
-            [temp_stats1_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set1(:,fea), training_labels(:), testing_labels(:), options);
-            [temp_stats2_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set2(:,fea), training_labels(:), testing_labels(:), options);
-            [temp_stats3_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set3(:,fea), training_labels(:), testing_labels(:), options);
+            iter;
+            fset;
+            [temp_stats1_sw,~] = Classify_wrapper('QDA', training_set(:,fea) , testing_set1(:,fea), training_labels(:), testing_labels(:), options);
+            [temp_stats2_sw,~] = Classify_wrapper('QDA', training_set(:,fea) , testing_set2(:,fea), training_labels(:), testing_labels(:), options);
+            [temp_stats3_sw,~] = Classify_wrapper('QDA', training_set(:,fea) , testing_set3(:,fea), training_labels(:), testing_labels(:), options);
             
             stats1(iter,fset)=temp_stats1_sw;
             stats2(iter,fset)=temp_stats2_sw;
@@ -287,7 +232,7 @@ for gset=1:1
         [FPR,TPR,T,AUC3_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions3_sw, 1,'XVals', [0:0.02:1]);
         
     end
-    
+    runtime = toc;
 %     featlist=fea_store(:,1:3);
 %     featlist=cell2mat(featlist);
 %     alpha(:,1)=unique(featlist);
@@ -332,12 +277,7 @@ for gset=1:1
 %     con_matrix{2,4}=false_negative2;
 
     temp1=fea_cell{1,2};
-    top_fea=feanames(temp1(1:num_top_feats,1));
+    top_fea=statnames(temp1(1:num_top_feats,1));
     top_fea=top_fea';
 end
-save(['CT_TI_resampled3D_entire_vol_grp1_IS+ICC_d_rd_pruning_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
-%save(['CT_largestTI_modified_combat_my_approach_grp1_CV_',num2str(num_top_feats),'_',fselmeth,'_','QDA.mat'],'fea_cell','HO_AUC','top_fea');
-%save(['CT_min_slices_flipped_grp1_CV_',num2str(num_top_feats),'_',fselmeth,'_','QDA.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
-%save(['CT_standardized_ROI_TI_grp1_CV_',num2str(num_top_feats),'_',fselmeth,'_','QDA.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
-%save(['CT_largestTI_modified_combat_nomod_grp1_CV_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2');
-% save(['CT_erroranalysis_largestTI_grp1_CV_',num2str(num_top_feats),'_',fselmeth,'_','Randomforest_independentwhiten.mat'],'con_matrix','Error_rate1_fold','Error_rate2_fold','Errorrate','stats1','stats2');
+%save(['CT_TI_resampled3D_entire_vol_grp1_IS_ICC_pruning_',num2str(num_top_feats),'_',fselmeth,'_','QDA.mat'],'fea_cell','HO_AUC','top_fea','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
