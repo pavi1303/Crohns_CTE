@@ -79,11 +79,13 @@ for pset = 1:1
             options = {'threshmeth','euclidean'};
             foldlabels{fset} = testing_labels;
             
-            [training_set_swno,mean_val,mad_val]=sw_outlier_compensation(training_set);
-            training_set=simplewhiten(training_set,mean_val,mad_val);
-            testing_set1=simplewhiten(testing_set1,mean_val,mad_val);
-            testing_set2=simplewhiten(testing_set2,mean_val,mad_val);
-            testing_set3=simplewhiten(testing_set3,mean_val,mad_val);
+            [~,mean_val,mad_val]=sw_outlier_compensation(training_set);
+            [~,mean_val1,mad_val1]=simplewhiten(training_set,mean_val,mad_val);
+            testing_set1=simplewhiten(testing_set1,mean_val1,mad_val1);
+            testing_set2=simplewhiten(testing_set2,mean_val1,mad_val1);
+            testing_set3=simplewhiten(testing_set3,mean_val1,mad_val1);
+            
+            clear mean_val* mad_val*
             
             if pruning==0
                 set_candiF=(1:length(training_set));
@@ -127,7 +129,7 @@ for pset = 1:1
             
             fea_store{iter,fset}=fea;
             
-            clear training_set* testing_set*
+            clear training_set* testing_set* training_labels* testing_labels* temp*
         end
         [FPR,TPR,~,AUC1_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions1_sw, 1,'XVals', [0:0.02:1]);
         [FPR,TPR,T,AUC2_sw(iter,:),OPTROCPT] = perfcurve(foldlabels, foldpredictions2_sw, 1,'XVals', [0:0.02:1]);
