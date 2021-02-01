@@ -19,7 +19,7 @@ for tfset = 1:length(topfea_range)
         pruning_level = pruning_stage(1,pset);
         switch pruning_level
             case 'NO'
-                load('CT_TI_featstack_3Dresampled_nopruning_grp2.mat');
+                load('CT_TI_featstack_3Dresampled_noCpruning_grp2.mat');
                 cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\1.No_pruning');
             case 'ICC'
                 load('CT_TI_featstack_3Dresampled_ICCpruning_grp2.mat');
@@ -46,7 +46,7 @@ for tfset = 1:length(topfea_range)
         switch pruning_level
             case 'NO'
                 load('CT_TI_featstack_3Dresampled_nopruning_grp1.mat');
-                fea_sw = [800,145,179,462,49,48,164,810,789,151];
+                fea_sw = [408,283,252,800,794,71,798,1438,328,805];
                 cd('W:\Final_resampled_results\AUC_results\Reformatted\Full_dose_training\1.No_pruning');
             case 'ICC'
                 load('CT_TI_featstack_3Dresampled_ICCpruning_grp1.mat');
@@ -108,7 +108,7 @@ for tfset = 1:length(topfea_range)
                 [temp_stats1_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set1(:,fea), training_labels(:), testing_labels(:), options);
                 [temp_stats2_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set2(:,fea), training_labels(:), testing_labels(:), options);
                 [temp_stats3_sw,~] = Classify_wrapper('RANDOMFOREST', training_set(:,fea) , testing_set3(:,fea), training_labels(:), testing_labels(:), options);
-                               
+                
                 stats1(iter,fset)=temp_stats1_sw;
                 stats2(iter,fset)=temp_stats2_sw;
                 stats3(iter,fset)=temp_stats1_sw;
@@ -129,8 +129,8 @@ for tfset = 1:length(topfea_range)
         HO_AUC(1,2)=mean(mean(HO_AUC2));
         HO_AUC(1,3)=mean(mean(HO_AUC3));
         
-        save(['CT_TI_3Dresampled_val_grp2_',num2str(num_top_feats),'_',convertStringsToChars(pruning_level),'_Randomforest.mat'],...
-            'fea_store','HO_AUC','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
+          save(['CT_TI_3Dresampled_val_grp2_',num2str(num_top_feats),'_',convertStringsToChars(pruning_level),'_Randomforest.mat'],...
+             'fea_store','HO_AUC','HO_AUC1','HO_AUC2','HO_AUC3','stats1','stats2','stats3');
     end
     clearvars -except dontuse fselmeth pruning topfea_range pruning_stage
 end
